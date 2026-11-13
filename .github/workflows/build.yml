@@ -1,4 +1,4 @@
-# Builds the Sea You Travel Editor installers and publishes them on this
+# Builds the TOVR Studio installers and publishes them on this
 # repository's Releases page. Runs here because public repositories get
 # GitHub Actions minutes for free (macOS included); the source stays in the
 # private repository briannt-source/studio, read with the STUDIO_TOKEN secret
@@ -103,9 +103,9 @@ jobs:
         run: |
           rm -f installers/builder-debug.yml installers/builder-effective-config.yml
           notes="Tải file cài cho máy của bạn:
-          - **Windows:** SeaYouEditor-Setup-${VERSION}.exe
-          - **Mac chip Apple (M1, M2, M3…):** SeaYouEditor-${VERSION}-arm64.dmg
-          - **Mac Intel:** SeaYouEditor-${VERSION}-x64.dmg
+          - **Windows:** TOVRStudio-Setup-${VERSION}.exe
+          - **Mac chip Apple (M1, M2, M3…):** TOVRStudio-${VERSION}-arm64.dmg
+          - **Mac Intel:** TOVRStudio-${VERSION}-x64.dmg
 
           Cài lần đầu: Windows hiện \"Windows protected your PC\" thì bấm More info → Run anyway; Mac chuột phải vào app → Open."
-          gh release create "v${VERSION}" --repo "$GITHUB_REPOSITORY" --title "Sea You Travel Editor ${VERSION}" --notes "$notes" --latest installers/*
+          gh release create "v${VERSION}" --repo "$GITHUB_REPOSITORY" --title "TOVR Studio ${VERSION}" --notes "$notes" --latest installers/*

@@ -1,4 +1,4 @@
-# Sea You Travel Editor
+# TOVR Studio
 
 Ứng dụng dựng video du lịch của Sea You Travel, cho **Windows** và **Mac**.
 
@@ -8,9 +8,9 @@
 
 | Máy | File |
 |---|---|
-| Windows 10 / 11 | `SeaYouEditor-Setup-….exe` |
-| Mac chip Apple (M1, M2, M3, M4) | `SeaYouEditor-…-arm64.dmg` |
-| Mac Intel | `SeaYouEditor-…-x64.dmg` |
+| Windows 10 / 11 | `TOVRStudio-Setup-….exe` |
+| Mac chip Apple (M1, M2, M3, M4) | `TOVRStudio-…-arm64.dmg` |
+| Mac Intel | `TOVRStudio-…-x64.dmg` |
 
 Không biết Mac của mình là loại nào: bấm logo  → **About This Mac**; dòng *Chip* ghi "Apple M…" là chip Apple, dòng *Processor* ghi "Intel" là Intel.
 
@@ -19,13 +19,13 @@ Không biết Mac của mình là loại nào: bấm logo  → **About This Mac*
 **Windows**
 1. Bấm đúp file `.exe`.
 2. Nếu hiện "Windows protected your PC": bấm **More info → Run anyway** (ứng dụng chưa mua chứng chỉ ký số, không phải virus).
-3. Mở bằng biểu tượng **Sea You Travel Editor** ngoài Desktop.
+3. Mở bằng biểu tượng **TOVR Studio** ngoài Desktop.
 
 **Mac**
-1. Mở file `.dmg`, kéo **Sea You Travel Editor** vào thư mục **Applications**.
+1. Mở file `.dmg`, kéo **TOVR Studio** vào thư mục **Applications**.
 2. Lần đầu mở: **chuột phải vào app → Open → Open**.
 3. Nếu báo "app is damaged": mở Terminal, chạy
-   `xattr -cr "/Applications/Sea You Travel Editor.app"` rồi mở lại.
+   `xattr -cr "/Applications/TOVR Studio.app"` rồi mở lại.
 
 ## Dùng
 

@@ -1,0 +1,111 @@
+# Builds the Sea You Travel Editor installers and publishes them on this
+# repository's Releases page. Runs here because public repositories get
+# GitHub Actions minutes for free (macOS included); the source stays in the
+# private repository briannt-source/studio, read with the STUDIO_TOKEN secret
+# (a read-only token for that repository).
+#
+# Start a release by pushing a tag here, matching desktop-app/package.json:
+#   git tag v1.0.3 && git push origin v1.0.3
+# The source is taken from the tag desktop-v1.0.3 of the private repository.
+name: Build installers
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Phiên bản (ví dụ 1.0.3); cần có tag desktop-v<phiên bản> trong kho studio"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  VERSION: ${{ inputs.version || github.ref_name }}
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+          - os: macos-latest
+            target: --mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Version
+        shell: bash
+        run: echo "VERSION=${VERSION#v}" >> "$GITHUB_ENV"
+
+      - name: Get the source (private repository)
+        uses: actions/checkout@v4
+        with:
+          repository: briannt-source/studio
+          ref: desktop-v${{ env.VERSION }}
+          token: ${{ secrets.STUDIO_TOKEN }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the web app's packages
+        run: bun install
+
+      - name: Install the desktop shell's packages
+        working-directory: desktop-app
+        run: npm ci
+
+      - name: Build the app server
+        working-directory: desktop-app
+        run: node scripts/prepare-server.mjs
+
+      - name: Package
+        working-directory: desktop-app
+        shell: bash
+        env:
+          # No paid signing certificates: Windows shows SmartScreen once, macOS needs right-click → Open
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npx electron-builder ${{ matrix.target }} --publish never
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            desktop-app/dist/*.exe
+            desktop-app/dist/*.dmg
+            desktop-app/dist/*.blockmap
+            desktop-app/dist/*.yml
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Version
+        run: echo "VERSION=${VERSION#v}" >> "$GITHUB_ENV"
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -f installers/builder-debug.yml installers/builder-effective-config.yml
+          notes="Tải file cài cho máy của bạn:
+          - **Windows:** SeaYouEditor-Setup-${VERSION}.exe
+          - **Mac chip Apple (M1, M2, M3…):** SeaYouEditor-${VERSION}-arm64.dmg
+          - **Mac Intel:** SeaYouEditor-${VERSION}-x64.dmg
+
+          Cài lần đầu: Windows hiện \"Windows protected your PC\" thì bấm More info → Run anyway; Mac chuột phải vào app → Open."
+          gh release create "v${VERSION}" --repo "$GITHUB_REPOSITORY" --title "Sea You Travel Editor ${VERSION}" --notes "$notes" --latest installers/*
